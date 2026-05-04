@@ -48,10 +48,10 @@ streamlit run app.py
 Then open the browser link shown in the terminal (usually http://localhost:8501).
 
 Project Structure
-.
-├── app.py 
-├── requirements.txt  
-├── artifacts/ 
+.    
+├── app.py        
+├── requirements.txt       
+├── artifacts/     
 │   ├── best_model.pkl   
 │   ├── feature_list.pkl  
 │   ├── results_df.csv    
