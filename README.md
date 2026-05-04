@@ -60,17 +60,20 @@ Project Structure
 │   ├── roc_auc.txt   
 │   ├── thresholds.json   
 │   └── ...        
-Model Evaluation
-Includes:
-Confusion Matrix
-ROC Curve
-Cross-validation results
-Notes
-This is a prototype for predictive analytics.
-The model does not directly use N, P, K values for prediction to avoid data leakage.
-Predictions are based on environmental factors only.
+Model Evaluation     
+Includes:    
+Confusion Matrix   
+ROC Curve   
+Cross-validation results   
+   
+Notes   
+This is a prototype for predictive analytics.      
+The model does not directly use N, P, K values for prediction to avoid data leakage.   
+Predictions are based on environmental factors only.   
+
 Author
-Miz
-Future Improvements
-Improve dataset size and diversity
-Deploy to cloud (e.g., Streamlit Cloud)
+Miz      
+   
+Future Improvements   
+Improve dataset size and diversity   
+Deploy to cloud (e.g., Streamlit Cloud)    
