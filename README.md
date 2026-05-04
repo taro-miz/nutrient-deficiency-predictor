@@ -1,51 +1,51 @@
 Nutrient Deficiency Risk Predictor
 
-A machine learning web application that predicts the risk of soil nutrient deficiency based on environmental and soil conditions such as temperature, humidity, pH, and rainfall.
+A machine learning web application that predicts the risk of soil nutrient deficiency based on environmental and soil conditions such as temperature, humidity, pH, and rainfall.     
+      
+Built using Python, Machine Learning, and Streamlit.    
 
-Built using Python, Machine Learning, and Streamlit.
+Features     
+Predict nutrient deficiency risk      
+Probability-based output    
+What-if analysis (sensitivity testing)     
+Batch prediction via CSV upload      
+Model performance visualization (Confusion Matrix, ROC Curve)      
+Automated recommendations based on input conditions      
 
-Features
-Predict nutrient deficiency risk 
-Probability-based output
-What-if analysis (sensitivity testing)
-Batch prediction via CSV upload
-Model performance visualization (Confusion Matrix, ROC Curve)
-Automated recommendations based on input conditions
+Model Overview     
+Target: Binary classification    
+0 → Normal     
+1 → Deficiency Risk    
+Based on:     
+Temperature    
+Humidity    
+Soil pH    
+Rainfall    
 
-Model Overview
-Target: Binary classification
-0 → Normal
-1 → Deficiency Risk
-Based on:
-Temperature
-Humidity
-Soil pH
-Rainfall
+Model is trained and stored in:    
 
-Model is trained and stored in:
-
-artifacts/best_model.pkl
-Installation
-1. Clone the repository
-git clone https://github.com/taro-miz/nutrient-deficiency-predictor.git
-cd nutrient-deficiency-predictor
-2. Install dependencies
-pip install -r requirements.txt
-
-Dependencies used:
-streamlit
-pandas
+artifacts/best_model.pkl    
+Installation    
+1. Clone the repository     
+git clone https://github.com/taro-miz/nutrient-deficiency-predictor.git     
+cd nutrient-deficiency-predictor     
+2. Install dependencies   
+pip install -r requirements.txt    
+   
+Dependencies used:    
+streamlit    
+pandas   
 numpy
-scikit-learn
-xgboost
-matplotlib
-seaborn
-joblib
+scikit-learn    
+xgboost    
+matplotlib    
+seaborn    
+joblib     
 
-How to Run
-streamlit run app.py
+How to Run      
+streamlit run app.py      
 
-Then open the browser link shown in the terminal (usually http://localhost:8501).
+Then open the browser link shown in the terminal (usually http://localhost:8501).  
 
 Project Structure
 .    
