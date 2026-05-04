@@ -5,7 +5,7 @@ A machine learning web application that predicts the risk of soil nutrient defic
 Built using Python, Machine Learning, and Streamlit.
 
 Features
-Predict nutrient deficiency risk (Low, Moderate, High)
+Predict nutrient deficiency risk 
 Probability-based output
 What-if analysis (sensitivity testing)
 Batch prediction via CSV upload
@@ -59,7 +59,7 @@ Project Structure
 │   ├── confusion_matrix.npy   
 │   ├── roc_auc.txt   
 │   ├── thresholds.json   
-│   └── ...
+│   └── ...        
 Model Evaluation
 Includes:
 Confusion Matrix
