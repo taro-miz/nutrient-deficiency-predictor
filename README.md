@@ -49,16 +49,16 @@ Then open the browser link shown in the terminal (usually http://localhost:8501)
 
 Project Structure
 .
-├── app.py
-├── requirements.txt
-├── artifacts/
-│   ├── best_model.pkl
-│   ├── feature_list.pkl
-│   ├── results_df.csv
-│   ├── cv_df.csv
-│   ├── confusion_matrix.npy
-│   ├── roc_auc.txt
-│   ├── thresholds.json
+├── app.py 
+├── requirements.txt  
+├── artifacts/ 
+│   ├── best_model.pkl   
+│   ├── feature_list.pkl  
+│   ├── results_df.csv    
+│   ├── cv_df.csv   
+│   ├── confusion_matrix.npy   
+│   ├── roc_auc.txt   
+│   ├── thresholds.json   
 │   └── ...
 Model Evaluation
 Includes:
