@@ -5,8 +5,70 @@ import joblib
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Nutrient Deficiency Risk Predictor", layout="wide")
+
+# -----------------------------
+# Global styling for PC viewing
+# -----------------------------
+st.markdown(
+    """
+    <style>
+        /* Constrain main content width so text is comfortable to read on wide PC screens */
+        .block-container {
+            max-width: 1200px;
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            margin: 0 auto;
+        }
+
+        /* Headings */
+        h1 { font-size: 2.0rem !important; }
+        h2 { font-size: 1.5rem !important; }
+        h3 { font-size: 1.2rem !important; }
+
+        /* Body text */
+        html, body, [class*="css"]  {
+            font-size: 16px;
+        }
+
+        /* Captions slightly larger than default */
+        .stCaption, .caption {
+            font-size: 0.95rem !important;
+        }
+
+        /* Tabs styling - slightly larger label */
+        .stTabs [data-baseweb="tab"] {
+            font-size: 1rem;
+            padding: 0.6rem 1rem;
+        }
+
+        /* Metric labels & values */
+        [data-testid="stMetricValue"] {
+            font-size: 1.4rem !important;
+        }
+        [data-testid="stMetricLabel"] {
+            font-size: 0.95rem !important;
+        }
+
+        /* Dataframe row text */
+        .stDataFrame, .stTable {
+            font-size: 0.9rem;
+        }
+
+        /* Center-align matplotlib figures and limit their max width */
+        .element-container:has(> .stPlotlyChart),
+        .element-container:has(> .stPyplot) {
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # -----------------------------
 # Helpers
@@ -67,6 +129,67 @@ def recommendation_text(pred, prob, temperature, humidity, ph, rainfall):
         recs.append("High humidity can increase plant stress vulnerability; improve field aeration/drainage if applicable.")
     return recs
 
+def render_centered_pyplot(fig, width_ratio=(1, 2, 1)):
+    """Render a matplotlib figure centered and at a controlled width."""
+    left, mid, right = st.columns(width_ratio)
+    with mid:
+        st.pyplot(fig, use_container_width=True)
+
+def make_risk_gauge(prob):
+    """Semi-circular gauge showing risk probability with green/yellow/red zones."""
+    pct = prob * 100
+    band_label, _ = risk_band(prob)
+
+    # Color of needle/value text based on risk band
+    if pct < 33:
+        value_color = "#2e7d32"  # green
+    elif pct < 66:
+        value_color = "#ef6c00"  # orange
+    else:
+        value_color = "#c62828"  # red
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=pct,
+        number={
+            "suffix": "%",
+            "font": {"size": 40, "color": value_color, "family": "Arial Black"},
+        },
+        title={
+            "text": f"Deficiency Risk Probability<br><span style='font-size:0.9em;color:#555'>{band_label}</span>",
+            "font": {"size": 16},
+        },
+        gauge={
+            "axis": {
+                "range": [0, 100],
+                "tickwidth": 1,
+                "tickcolor": "#555",
+                "tickfont": {"size": 11},
+            },
+            "bar": {"color": "rgba(0,0,0,0)"},  # hide default bar; use steps + threshold needle
+            "bgcolor": "white",
+            "borderwidth": 1,
+            "bordercolor": "#ddd",
+            "steps": [
+                {"range": [0, 33], "color": "#66bb6a"},   # green
+                {"range": [33, 66], "color": "#ffca28"},  # yellow
+                {"range": [66, 100], "color": "#ef5350"}, # red
+            ],
+            "threshold": {
+                "line": {"color": value_color, "width": 5},
+                "thickness": 0.85,
+                "value": pct,
+            },
+        },
+    ))
+    fig.update_layout(
+        height=280,
+        margin=dict(l=20, r=20, t=60, b=20),
+        paper_bgcolor="white",
+        font={"color": "#333"},
+    )
+    return fig
+
 # -----------------------------
 # Load artifacts
 # -----------------------------
@@ -109,10 +232,19 @@ with tabs[0]:
         band, color = risk_band(prob if prob is not None else 0.0)
 
         st.markdown("### Result")
-        colA, colB, colC = st.columns(3)
-        colA.metric("Predicted Class", "Deficiency Risk (1)" if pred == 1 else "Normal (0)")
-        colB.metric("Risk Probability (Class 1)", f"{prob*100:.2f}%" if prob is not None else "N/A")
-        colC.markdown(f"**Risk Band:** :{color}[{band}]")
+
+        # Left column: text metrics. Right column: gauge chart.
+        left_col, right_col = st.columns([1, 1])
+
+        with left_col:
+            st.metric("Predicted Class", "Deficiency Risk (1)" if pred == 1 else "Normal (0)")
+            st.metric("Risk Probability (Class 1)", f"{prob*100:.2f}%" if prob is not None else "N/A")
+            st.markdown(f"**Risk Band:** :{color}[{band}]")
+
+        with right_col:
+            if prob is not None:
+                gauge_fig = make_risk_gauge(prob)
+                st.plotly_chart(gauge_fig, use_container_width=True)
 
         st.markdown("### Recommendations")
         recs = recommendation_text(pred, prob, temperature, humidity, ph, rainfall)
@@ -166,13 +298,15 @@ with tabs[1]:
         probs = [predict_one(model, features, base_temp, base_hum, base_ph, x)[1] for x in xs]
         xlab = "Rainfall (mm)"
 
-    fig, ax = plt.subplots(figsize=(8,4))
-    ax.plot(xs, np.array(probs)*100)
-    ax.set_xlabel(xlab)
-    ax.set_ylabel("Deficiency Risk Probability (%)")
-    ax.set_title(f"What-if Curve: Risk vs {var}")
+    fig, ax = plt.subplots(figsize=(7, 3.5), dpi=110)
+    ax.plot(xs, np.array(probs)*100, linewidth=2)
+    ax.set_xlabel(xlab, fontsize=10)
+    ax.set_ylabel("Deficiency Risk Probability (%)", fontsize=10)
+    ax.set_title(f"What-if Curve: Risk vs {var}", fontsize=11)
+    ax.tick_params(labelsize=9)
     ax.grid(True, alpha=0.3)
-    st.pyplot(fig)
+    fig.tight_layout()
+    render_centered_pyplot(fig, width_ratio=(1, 3, 1))
 
 # -----------------------------
 # Tab 3: Batch prediction
@@ -196,7 +330,7 @@ with tabs[2]:
             out["predicted_class"] = preds
             out["risk_probability"] = probs
 
-            st.dataframe(out.head(20))
+            st.dataframe(out.head(20), use_container_width=True)
 
             st.download_button(
                 "Download Predictions (CSV)",
@@ -215,30 +349,35 @@ with tabs[3]:
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("**Test-set Comparison (results_df)**")
-        st.dataframe(results_df.sort_values("F1", ascending=False))
+        st.dataframe(results_df.sort_values("F1", ascending=False), use_container_width=True)
     with c2:
         st.markdown("**10-fold Cross-Validation (cv_df)**")
-        st.dataframe(cv_df.sort_values("CV_F1_Mean", ascending=False))
+        st.dataframe(cv_df.sort_values("CV_F1_Mean", ascending=False), use_container_width=True)
 
     st.markdown("### Confusion Matrix (Best Model)")
-    fig, ax = plt.subplots(figsize=(5,4))
+    fig, ax = plt.subplots(figsize=(4.5, 3.5), dpi=110)
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
                 xticklabels=["Normal (0)", "Deficiency Risk (1)"],
-                yticklabels=["Normal (0)", "Deficiency Risk (1)"], ax=ax)
-    ax.set_xlabel("Predicted")
-    ax.set_ylabel("Actual")
-    ax.set_title(f"Confusion Matrix - {best_name}")
-    st.pyplot(fig)
+                yticklabels=["Normal (0)", "Deficiency Risk (1)"],
+                annot_kws={"size": 10}, ax=ax)
+    ax.set_xlabel("Predicted", fontsize=10)
+    ax.set_ylabel("Actual", fontsize=10)
+    ax.set_title(f"Confusion Matrix - {best_name}", fontsize=11)
+    ax.tick_params(labelsize=9)
+    fig.tight_layout()
+    render_centered_pyplot(fig, width_ratio=(1, 2, 1))
 
     st.markdown("### ROC Curve (Best Model)")
-    fig, ax = plt.subplots(figsize=(6,4))
-    ax.plot(fpr, tpr, label=f"AUC = {auc:.3f}")
-    ax.plot([0,1], [0,1], linestyle="--", color="gray")
-    ax.set_xlabel("False Positive Rate")
-    ax.set_ylabel("True Positive Rate")
-    ax.set_title(f"ROC Curve - {best_name}")
-    ax.legend()
-    st.pyplot(fig)
+    fig, ax = plt.subplots(figsize=(5.5, 3.8), dpi=110)
+    ax.plot(fpr, tpr, label=f"AUC = {auc:.3f}", linewidth=2)
+    ax.plot([0, 1], [0, 1], linestyle="--", color="gray", linewidth=1)
+    ax.set_xlabel("False Positive Rate", fontsize=10)
+    ax.set_ylabel("True Positive Rate", fontsize=10)
+    ax.set_title(f"ROC Curve - {best_name}", fontsize=11)
+    ax.tick_params(labelsize=9)
+    ax.legend(fontsize=9)
+    fig.tight_layout()
+    render_centered_pyplot(fig, width_ratio=(1, 2, 1))
 
 # -----------------------------
 # Tab 5: About/target definition
