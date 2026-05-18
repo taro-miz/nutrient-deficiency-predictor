@@ -1,6 +1,40 @@
 {
   "q": 0.25,
-  "N_thr": 20.0,
-  "P_thr": 28.0,
-  "K_thr": 20.0
+  "method": "crop_specific_quartile",
+  "or_rule": "Liebig's law of the minimum - any nutrient below threshold triggers Deficiency Risk",
+  "theoretical_flag_rate": 0.578,
+  "observed_flag_rates": {
+    "fruits": 0.529,
+    "high_n_demand": 0.563,
+    "legumes": 0.540
+  },
+  "agronomic_groups": {
+    "high_n_demand": ["rice", "maize", "cotton", "jute", "coffee"],
+    "legumes": ["chickpea", "kidneybeans", "pigeonpeas", "mothbeans", "mungbean", "blackgram", "lentil"],
+    "fruits": ["pomegranate", "banana", "mango", "grapes", "watermelon", "muskmelon", "apple", "orange", "papaya", "coconut"]
+  },
+  "crop_thresholds": {
+    "apple": {"N_thr": 10.0, "P_thr": 127.0, "K_thr": 197.0},
+    "banana": {"N_thr": 91.5, "P_thr": 75.0, "K_thr": 47.0},
+    "blackgram": {"N_thr": 29.0, "P_thr": 62.0, "K_thr": 16.0},
+    "chickpea": {"N_thr": 31.0, "P_thr": 62.0, "K_thr": 77.0},
+    "coconut": {"N_thr": 10.0, "P_thr": 10.0, "K_thr": 29.0},
+    "coffee": {"N_thr": 91.0, "P_thr": 23.0, "K_thr": 27.0},
+    "cotton": {"N_thr": 108.0, "P_thr": 39.5, "K_thr": 17.0},
+    "grapes": {"N_thr": 11.25, "P_thr": 126.0, "K_thr": 197.0},
+    "jute": {"N_thr": 71.0, "P_thr": 41.0, "K_thr": 37.0},
+    "kidneybeans": {"N_thr": 12.0, "P_thr": 61.0, "K_thr": 17.75},
+    "lentil": {"N_thr": 9.0, "P_thr": 61.0, "K_thr": 17.0},
+    "maize": {"N_thr": 68.5, "P_thr": 43.0, "K_thr": 17.0},
+    "mango": {"N_thr": 8.0, "P_thr": 20.0, "K_thr": 27.0},
+    "mothbeans": {"N_thr": 11.0, "P_thr": 43.0, "K_thr": 17.0},
+    "mungbean": {"N_thr": 9.0, "P_thr": 40.0, "K_thr": 17.0},
+    "muskmelon": {"N_thr": 89.0, "P_thr": 12.0, "K_thr": 47.0},
+    "orange": {"N_thr": 9.0, "P_thr": 9.0, "K_thr": 8.0},
+    "papaya": {"N_thr": 39.0, "P_thr": 52.0, "K_thr": 47.0},
+    "pigeonpeas": {"N_thr": 10.0, "P_thr": 61.0, "K_thr": 18.0},
+    "pomegranate": {"N_thr": 7.0, "P_thr": 13.0, "K_thr": 38.0},
+    "rice": {"N_thr": 69.0, "P_thr": 40.0, "K_thr": 38.0},
+    "watermelon": {"N_thr": 88.0, "P_thr": 10.0, "K_thr": 47.0}
+  }
 }
